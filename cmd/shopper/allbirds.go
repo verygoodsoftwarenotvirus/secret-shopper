@@ -37,17 +37,23 @@ func fetchAllbirdsProducts(browser playwright.Browser) ([]*ProductGroup, error) 
 			return nil, fmt.Errorf("could not find colorway links: %w", err)
 		}
 
-		for _, colorway := range allColorwayLinks {
+		allLinks := []string{}
+		for colorwayIndex, colorway := range allColorwayLinks {
 			colorwayLink, err := colorway.GetAttribute("href")
 			if err != nil {
-				slog.Error("could not get colorway link", slog.Any("error", err), slog.String("url", page.URL()))
+				slog.Error("could not get colorway link", slog.Any("error", err), slog.String("url", page.URL()), slog.Int("index", colorwayIndex))
 				continue
 			}
 
-			colorwayLink = page.URL() + colorwayLink
+			if colorwayLink != "" {
+				allLinks = append(allLinks, page.URL()+colorwayLink)
+			}
+		}
 
-			productGroup, err := parseAllbirdsProductPage(page, colorwayLink)
+		for colorwayIndex, colorway := range allLinks {
+			productGroup, err := parseAllbirdsProductPage(page, colorway)
 			if err != nil {
+				slog.Error("could not parse product", slog.Any("error", err), slog.String("url", page.URL()), slog.Int("index", colorwayIndex))
 				return nil, fmt.Errorf("could not parse product group: %w", err)
 			}
 

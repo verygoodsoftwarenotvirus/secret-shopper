@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/playwright-community/playwright-go"
 	"log"
 	"log/slog"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -31,9 +34,14 @@ func main() {
 		log.Fatalf("could not fetch Allbirds products: %v", err)
 	}
 
-	if err = json.NewEncoder(os.Stdout).Encode(productGroup); err != nil {
+	var b bytes.Buffer
+	if err = json.NewEncoder(&b).Encode(productGroup); err != nil {
 		log.Fatalf("could not encode product group: %v", err)
 	}
+
+	fmt.Println(strings.Repeat("\n", 5))
+	fmt.Println(b.String())
+	fmt.Println(strings.Repeat("\n", 5))
 
 	if err = pw.Stop(); err != nil {
 		log.Fatalf("could not stop Playwright: %v", err)
