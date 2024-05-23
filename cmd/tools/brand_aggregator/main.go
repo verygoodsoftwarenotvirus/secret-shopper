@@ -21,5 +21,5 @@ func renderToJSONFile(content any, filePath string) {
 }
 
 func main() {
-	fetchAllFairWearData()
+	fetchAllGoodOnYouData()
 }
